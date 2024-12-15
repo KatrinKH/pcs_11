@@ -1,4 +1,3 @@
-// home_page.dart
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pcs_11/components/product_card.dart';
@@ -86,7 +85,6 @@ class _HomePageState extends State<HomePage> {
 
               return GestureDetector(
                 onTap: () {
-                  // Переходим на страницу товара при нажатии
                   Navigator.push(
                     context,
                     MaterialPageRoute(

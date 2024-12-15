@@ -7,19 +7,16 @@ class ProductDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Отладка: вывод объекта продукта в консоль
     print(product);
 
-    // Инициализация данных из объекта продукта
     final name = product['Name'] ?? 'Без названия';
     final imageUrl = product['ImageURL'] ?? '';
     final description = product['Description'] ?? 'Нет описания';
     final price = product['Price'] != null ? '\Р${product['Price']}' : 'Цена не указана';
 
-    // Проверьте, что названия полей совпадают с названиями в Supabase
-    final genre = product['genre'] ?? 'Жанр не указан'; // Убедитесь, что поле называется 'genre'
-    final releaseDate = product['releaseDate'] ?? 'Дата выпуска не указана'; // Поле для даты выпуска
-    final developer = product['developer'] ?? 'Разработчик не указан'; // Поле для разработчика
+    final genre = product['genre'] ?? 'Жанр не указан'; 
+    final releaseDate = product['releaseDate'] ?? 'Дата выпуска не указана'; 
+    final developer = product['developer'] ?? 'Разработчик не указан'; 
 
     return Scaffold(
       appBar: AppBar(
@@ -31,7 +28,6 @@ class ProductDetailPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Если URL изображения указан, отображаем изображение
               if (imageUrl.isNotEmpty)
                 Center(
                   child: Image.network(
@@ -43,7 +39,6 @@ class ProductDetailPage extends StatelessWidget {
                 ),
               const SizedBox(height: 16),
 
-              // Отображение названия продукта
               Text(
                 name,
                 style: const TextStyle(
@@ -53,14 +48,12 @@ class ProductDetailPage extends StatelessWidget {
               ),
               const SizedBox(height: 8),
 
-              // Отображение описания продукта
               Text(
                 description,
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 16),
 
-              // Отображение цены продукта
               Text(
                 price,
                 style: const TextStyle(
@@ -71,21 +64,18 @@ class ProductDetailPage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Отображение жанра продукта
               Text(
                 'Жанр: $genre',
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 8),
 
-              // Отображение даты выпуска
               Text(
                 'Дата выпуска: $releaseDate',
                 style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 8),
 
-              // Отображение разработчика продукта
               Text(
                 'Разработчик: $developer',
                 style: const TextStyle(fontSize: 16),
