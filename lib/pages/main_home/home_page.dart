@@ -123,7 +123,7 @@ class _HomePageState extends State<HomePage> {
                   });
                 },
               )
-            : const Text('Видеоигры'),
+            : const Text('Видеоигры'), // Corrected this line
         centerTitle: true,
         actions: [
           IconButton(
