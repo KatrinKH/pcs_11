@@ -52,6 +52,13 @@ class _HomePageState extends State<HomePage> {
     return notes;
   }
 
+  List<Map<String, dynamic>> _filterNotes(List<Map<String, dynamic>> notes) {
+    if (_searchQuery.isEmpty) {
+      return notes;
+    }
+    return notes.where((note) => note['Name'].toString().toLowerCase().contains(_searchQuery.toLowerCase())).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -169,8 +176,9 @@ class _HomePageState extends State<HomePage> {
           _originalNotes ??= List.from(notes);
 
           final sortedNotes = _sortNotes(List.from(notes));
+          final filteredNotes = _filterNotes(sortedNotes);
 
-          if (sortedNotes.isEmpty) {
+          if (filteredNotes.isEmpty) {
             return const Center(child: Text('Товары не найдены'));
           }
 
@@ -182,9 +190,9 @@ class _HomePageState extends State<HomePage> {
               mainAxisSpacing: 16.0,
             ),
             padding: const EdgeInsets.all(10.0),
-            itemCount: sortedNotes.length,
+            itemCount: filteredNotes.length,
             itemBuilder: (context, index) {
-              final note = sortedNotes[index];
+              final note = filteredNotes[index];
               final name = note['Name'] ?? 'Без названия';
               final imageUrl = note['ImageURL'] ?? '';
               final description = note['Description'] ?? 'Нет описания';
