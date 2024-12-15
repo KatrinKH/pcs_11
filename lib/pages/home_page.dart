@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:pcs_11/model/product_card.dart';
+import 'package:pcs_11/components/product_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -105,10 +105,11 @@ class _HomePageState extends State<HomePage> {
           return GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 0.6,
+              childAspectRatio: 0.5,
               crossAxisSpacing: 16.0,
               mainAxisSpacing: 16.0,
             ),
+            padding: const EdgeInsets.all(10.0),
             itemCount: notes.length,
             itemBuilder: (context, index) {
               final note = notes[index];
