@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:pcs_11/model/product_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,10 +16,6 @@ class _HomePageState extends State<HomePage> {
   final descriptionController = TextEditingController();
   final priceController = TextEditingController();
 
-  /* 
-  CREATE - создание новой записи и сохранение в Supabase
-  */
-
   void addNewNote() {
     showDialog(
       context: context,
@@ -27,7 +24,6 @@ class _HomePageState extends State<HomePage> {
         content: SingleChildScrollView(
           child: Column(
             children: [
-              // Поля ввода данных
               TextField(
                 controller: nameController,
                 decoration: const InputDecoration(labelText: 'Название'),
@@ -49,7 +45,6 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         actions: [
-          // Кнопка для сохранения
           TextButton(
             onPressed: () {
               saveNote();
@@ -63,29 +58,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   void saveNote() async {
-    // Преобразование строки с ценой в число
     final double? price = double.tryParse(priceController.text);
 
-    // Сохранение данных в таблице 'notes' в Supabase
     await Supabase.instance.client
         .from('notes')
         .insert({
-          'Name': nameController.text, // Поле Name
-          'ImageURL': imageUrlController.text, // Поле ImageURL
-          'Description': descriptionController.text, // Поле Description
-          'Price': price, // Поле Price (как число)
+          'Name': nameController.text,
+          'ImageURL': imageUrlController.text,
+          'Description': descriptionController.text,
+          'Price': price,
         });
 
-    // Очищаем поля после сохранения
     nameController.clear();
     imageUrlController.clear();
     descriptionController.clear();
     priceController.clear();
   }
-
-  /* 
-  READ - данные из таблицы Supabase
-  */
 
   final _notesStream = Supabase.instance.client.from('notes').stream(primaryKey: ['id']);
 
@@ -104,88 +92,36 @@ class _HomePageState extends State<HomePage> {
       body: StreamBuilder<List<Map<String, dynamic>>>(
         stream: _notesStream,
         builder: (context, snapshot) {
-          // Показ индикатора загрузки
           if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          // Загруженные данные
           final notes = snapshot.data;
 
-          // Если данных нет
           if (notes == null || notes.isEmpty) {
             return const Center(child: Text('Нет товаров'));
           }
 
-          // Отображение сетки с товарами
           return GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2, // Количество колонок
-              childAspectRatio: 0.6, // Пропорции элементов
-              crossAxisSpacing: 16.0, // Расстояние между колонками
-              mainAxisSpacing: 16.0, // Расстояние между строками
+              crossAxisCount: 2,
+              childAspectRatio: 0.6,
+              crossAxisSpacing: 16.0,
+              mainAxisSpacing: 16.0,
             ),
             itemCount: notes.length,
             itemBuilder: (context, index) {
               final note = notes[index];
-
-              // Извлекаем данные для отображения
               final name = note['Name'] ?? 'Без названия';
               final imageUrl = note['ImageURL'] ?? '';
               final description = note['Description'] ?? 'Нет описания';
               final price = note['Price'] != null ? '\Р${note['Price']}' : 'Цена не указана';
 
-              // Отображаем карточку товара
-              return Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Отображаем изображение товара, если оно указано
-                      if (imageUrl.isNotEmpty)
-                        Expanded(
-                          child: Image.network(
-                            imageUrl,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                          ),
-                        ),
-                      const SizedBox(height: 8),
-                      // Отображаем название товара
-                      Text(
-                        name,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      // Отображаем описание
-                      Text(
-                        description,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      // Отображаем цену товара
-                      Text(
-                        price,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              return ProductCard(
+                name: name,
+                imageUrl: imageUrl,
+                description: description,
+                price: price,
               );
             },
           );
