@@ -26,7 +26,6 @@ class ProductCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Отображаем изображение товара, если оно указано
             if (imageUrl.isNotEmpty)
               Expanded(
                 child: Image.network(
@@ -36,7 +35,6 @@ class ProductCard extends StatelessWidget {
                 ),
               ),
             const SizedBox(height: 8),
-            // Отображаем название товара
             Text(
               name,
               style: const TextStyle(
@@ -45,7 +43,6 @@ class ProductCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            // Отображаем описание
             Text(
               description,
               maxLines: 2,
@@ -55,7 +52,6 @@ class ProductCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            // Отображаем цену товара
             Text(
               price,
               style: const TextStyle(
