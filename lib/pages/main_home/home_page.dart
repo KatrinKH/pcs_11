@@ -14,7 +14,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _notesStream = Supabase.instance.client.from('notes').stream(primaryKey: ['id']);
-  final List<Map<String, dynamic>> _cartItems = []; 
+  final List<Map<String, dynamic>> _cartItems = [];
+  String _searchQuery = ''; // Переменная для хранения запроса поиска
+  bool _isSearching = false; // Флаг для показа строки поиска
 
   void addNewNote() {
     showDialog(
@@ -29,6 +31,17 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  // Функция для фильтрации товаров по запросу поиска
+  List<Map<String, dynamic>> _filterNotes(List<Map<String, dynamic>> notes) {
+    if (_searchQuery.isEmpty) {
+      return notes;
+    }
+    return notes.where((note) {
+      final name = note['Name']?.toLowerCase() ?? '';
+      return name.contains(_searchQuery.toLowerCase());
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,9 +50,35 @@ class _HomePageState extends State<HomePage> {
           icon: const Icon(Icons.add),
           onPressed: addNewNote,
         ),
-        title: const Text('Видеоигры'),
+        title: _isSearching
+            ? TextField(
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: 'Поиск товаров...',
+                  border: InputBorder.none,
+                ),
+                onChanged: (query) {
+                  setState(() {
+                    _searchQuery = query;
+                  });
+                },
+              )
+            : const Text('Видеоигры'),
         centerTitle: true,
         actions: [
+          // Иконка поиска с отступом слева
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0), // Отступ справа для корзины
+            child: IconButton(
+              icon: Icon(_isSearching ? Icons.close : Icons.search),
+              onPressed: () {
+                setState(() {
+                  _isSearching = !_isSearching; // Переключение режима поиска
+                  _searchQuery = ''; // Очистка строки поиска
+                });
+              },
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.shopping_cart),
             onPressed: () {
@@ -67,6 +106,12 @@ class _HomePageState extends State<HomePage> {
             return const Center(child: Text('Нет товаров'));
           }
 
+          final filteredNotes = _filterNotes(notes); // Применение фильтрации
+
+          if (filteredNotes.isEmpty) {
+            return const Center(child: Text('Товары не найдены'));
+          }
+
           return GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
@@ -75,9 +120,9 @@ class _HomePageState extends State<HomePage> {
               mainAxisSpacing: 16.0,
             ),
             padding: const EdgeInsets.all(10.0),
-            itemCount: notes.length,
+            itemCount: filteredNotes.length,
             itemBuilder: (context, index) {
-              final note = notes[index];
+              final note = filteredNotes[index];
               final name = note['Name'] ?? 'Без названия';
               final imageUrl = note['ImageURL'] ?? '';
               final description = note['Description'] ?? 'Нет описания';
