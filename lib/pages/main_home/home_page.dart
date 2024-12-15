@@ -1,8 +1,10 @@
+// home_page.dart
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pcs_11/components/product_card.dart';
 import 'package:pcs_11/widgets/add_product_dialog.dart';
-import 'package:pcs_11/pages/shopping_page.dart';
+import 'package:pcs_11/pages/main_home/shopping_page.dart';
+import 'package:pcs_11/pages/main_home/product_detail_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -83,7 +85,15 @@ class _HomePageState extends State<HomePage> {
               final price = note['Price'] != null ? '\Р${note['Price']}' : 'Цена не указана';
 
               return GestureDetector(
-                onTap: () => addToCart(note), 
+                onTap: () {
+                  // Переходим на страницу товара при нажатии
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductDetailPage(product: note),
+                    ),
+                  );
+                },
                 child: ProductCard(
                   name: name,
                   imageUrl: imageUrl,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pcs_11/auth/auth_service.dart';
-import 'package:pcs_11/pages/login_page.dart';
+import 'package:pcs_11/pages/main_profile/login_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart'; 
 
 class UserData {
@@ -138,7 +138,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final currentEmail = authService.getCurrentUserEmail();
+    authService.getCurrentUserEmail();
 
     return Scaffold(
       appBar: AppBar(

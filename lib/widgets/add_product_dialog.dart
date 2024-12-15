@@ -13,21 +13,32 @@ class _AddProductDialogState extends State<AddProductDialog> {
   final imageUrlController = TextEditingController();
   final descriptionController = TextEditingController();
   final priceController = TextEditingController();
+  final genreController = TextEditingController(); // Для жанра
+  final releaseDateController = TextEditingController(); // Для даты выпуска
+  final developerController = TextEditingController(); // Для разработчика
 
   void saveNote() async {
     final double? price = double.tryParse(priceController.text);
+    final DateTime? releaseDate = DateTime.tryParse(releaseDateController.text); // Преобразование даты
 
     await Supabase.instance.client.from('notes').insert({
       'Name': nameController.text,
       'ImageURL': imageUrlController.text,
       'Description': descriptionController.text,
       'Price': price,
+      'Genre': genreController.text, // Добавление жанра
+      'ReleaseDate': releaseDate?.toIso8601String(), // Добавление даты выпуска
+      'Developer': developerController.text, // Добавление разработчика
     });
 
+    // Очищаем поля после сохранения
     nameController.clear();
     imageUrlController.clear();
     descriptionController.clear();
     priceController.clear();
+    genreController.clear();
+    releaseDateController.clear();
+    developerController.clear();
   }
 
   @override
@@ -53,6 +64,18 @@ class _AddProductDialogState extends State<AddProductDialog> {
               controller: priceController,
               decoration: const InputDecoration(labelText: 'Цена'),
               keyboardType: TextInputType.number,
+            ),
+            TextField(
+              controller: genreController,
+              decoration: const InputDecoration(labelText: 'Жанр'), // Поле для жанра
+            ),
+            TextField(
+              controller: releaseDateController,
+              decoration: const InputDecoration(labelText: 'Дата выпуска (гггг-мм-дд)'), // Поле для даты выпуска
+            ),
+            TextField(
+              controller: developerController,
+              decoration: const InputDecoration(labelText: 'Разработчик'), // Поле для разработчика
             ),
           ],
         ),

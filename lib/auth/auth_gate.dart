@@ -11,8 +11,8 @@ authenticated -> Profile Page
 
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:pcs_11/pages/login_page.dart';
-import 'package:pcs_11/pages/profile_page.dart';
+import 'package:pcs_11/pages/main_profile/login_page.dart';
+import 'package:pcs_11/pages/main_profile/profile_page.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
