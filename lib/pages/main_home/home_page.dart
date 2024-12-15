@@ -18,6 +18,10 @@ class _HomePageState extends State<HomePage> {
   String _searchQuery = ''; // Переменная для хранения запроса поиска
   bool _isSearching = false; // Флаг для показа строки поиска
 
+  // Для сортировки
+  String _sortCriteria = 'Сбросить'; // Критерий сортировки
+  List<Map<String, dynamic>>? _originalNotes; // Исходный список товаров
+
   void addNewNote() {
     showDialog(
       context: context,
@@ -31,15 +35,24 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  // Функция для фильтрации товаров по запросу поиска
-  List<Map<String, dynamic>> _filterNotes(List<Map<String, dynamic>> notes) {
-    if (_searchQuery.isEmpty) {
-      return notes;
+  // Функция для сортировки товаров
+  List<Map<String, dynamic>> _sortNotes(List<Map<String, dynamic>> notes) {
+    switch (_sortCriteria) {
+      case 'Дешевле':
+        notes.sort((a, b) => (a['Price'] ?? 0).compareTo(b['Price'] ?? 0));
+        break;
+      case 'Дороже':
+        notes.sort((a, b) => (b['Price'] ?? 0).compareTo(a['Price'] ?? 0));
+        break;
+      case 'По алфавиту':
+        notes.sort((a, b) => (a['Name'] ?? '').compareTo(b['Name'] ?? ''));
+        break;
+      case 'Сбросить':
+      default:
+        // Возвращаем исходный список товаров
+        return _originalNotes ?? notes;
     }
-    return notes.where((note) {
-      final name = note['Name']?.toLowerCase() ?? '';
-      return name.contains(_searchQuery.toLowerCase());
-    }).toList();
+    return notes;
   }
 
   @override
@@ -47,8 +60,59 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.add),
-          onPressed: addNewNote,
+          icon: const Icon(Icons.sort),
+          onPressed: () {
+            // Показываем диалог для сортировки товаров
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text('Выберите критерий сортировки'),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ListTile(
+                        title: const Text('Дешевле'),
+                        onTap: () {
+                          setState(() {
+                            _sortCriteria = 'Дешевле';
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
+                      ListTile(
+                        title: const Text('Дороже'),
+                        onTap: () {
+                          setState(() {
+                            _sortCriteria = 'Дороже';
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
+                      ListTile(
+                        title: const Text('По алфавиту'),
+                        onTap: () {
+                          setState(() {
+                            _sortCriteria = 'По алфавиту';
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
+                      ListTile(
+                        title: const Text('Сбросить'),
+                        onTap: () {
+                          setState(() {
+                            _sortCriteria = 'Сбросить';
+                          });
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          },
         ),
         title: _isSearching
             ? TextField(
@@ -66,18 +130,18 @@ class _HomePageState extends State<HomePage> {
             : const Text('Видеоигры'),
         centerTitle: true,
         actions: [
-          // Иконка поиска с отступом слева
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0), // Отступ справа для корзины
-            child: IconButton(
-              icon: Icon(_isSearching ? Icons.close : Icons.search),
-              onPressed: () {
-                setState(() {
-                  _isSearching = !_isSearching; // Переключение режима поиска
-                  _searchQuery = ''; // Очистка строки поиска
-                });
-              },
-            ),
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: addNewNote,
+          ),
+          IconButton(
+            icon: Icon(_isSearching ? Icons.close : Icons.search),
+            onPressed: () {
+              setState(() {
+                _isSearching = !_isSearching;
+                _searchQuery = '';
+              });
+            },
           ),
           IconButton(
             icon: const Icon(Icons.shopping_cart),
@@ -106,9 +170,13 @@ class _HomePageState extends State<HomePage> {
             return const Center(child: Text('Нет товаров'));
           }
 
-          final filteredNotes = _filterNotes(notes); // Применение фильтрации
+          // Сохраняем исходный список товаров, если он еще не сохранен
+          _originalNotes ??= List.from(notes);
 
-          if (filteredNotes.isEmpty) {
+          // Применяем сортировку
+          final sortedNotes = _sortNotes(List.from(notes));
+
+          if (sortedNotes.isEmpty) {
             return const Center(child: Text('Товары не найдены'));
           }
 
@@ -120,9 +188,9 @@ class _HomePageState extends State<HomePage> {
               mainAxisSpacing: 16.0,
             ),
             padding: const EdgeInsets.all(10.0),
-            itemCount: filteredNotes.length,
+            itemCount: sortedNotes.length,
             itemBuilder: (context, index) {
-              final note = filteredNotes[index];
+              final note = sortedNotes[index];
               final name = note['Name'] ?? 'Без названия';
               final imageUrl = note['ImageURL'] ?? '';
               final description = note['Description'] ?? 'Нет описания';
