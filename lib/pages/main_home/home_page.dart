@@ -15,12 +15,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final _notesStream = Supabase.instance.client.from('notes').stream(primaryKey: ['id']);
   final List<Map<String, dynamic>> _cartItems = [];
-  String _searchQuery = ''; // Переменная для хранения запроса поиска
-  bool _isSearching = false; // Флаг для показа строки поиска
+  String _searchQuery = ''; 
+  bool _isSearching = false; 
 
-  // Для сортировки
-  String _sortCriteria = 'Сбросить'; // Критерий сортировки
-  List<Map<String, dynamic>>? _originalNotes; // Исходный список товаров
+  String _sortCriteria = 'Сбросить'; 
+  List<Map<String, dynamic>>? _originalNotes; 
 
   void addNewNote() {
     showDialog(
@@ -35,7 +34,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  // Функция для сортировки товаров
   List<Map<String, dynamic>> _sortNotes(List<Map<String, dynamic>> notes) {
     switch (_sortCriteria) {
       case 'Дешевле':
@@ -49,7 +47,6 @@ class _HomePageState extends State<HomePage> {
         break;
       case 'Сбросить':
       default:
-        // Возвращаем исходный список товаров
         return _originalNotes ?? notes;
     }
     return notes;
@@ -62,7 +59,6 @@ class _HomePageState extends State<HomePage> {
         leading: IconButton(
           icon: const Icon(Icons.sort),
           onPressed: () {
-            // Показываем диалог для сортировки товаров
             showDialog(
               context: context,
               builder: (context) {
@@ -170,10 +166,8 @@ class _HomePageState extends State<HomePage> {
             return const Center(child: Text('Нет товаров'));
           }
 
-          // Сохраняем исходный список товаров, если он еще не сохранен
           _originalNotes ??= List.from(notes);
 
-          // Применяем сортировку
           final sortedNotes = _sortNotes(List.from(notes));
 
           if (sortedNotes.isEmpty) {
