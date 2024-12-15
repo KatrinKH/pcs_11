@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pcs_11/components/product_card.dart';
+import 'package:pcs_11/widgets/add_product_dialog.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,72 +11,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // Текстовые контроллеры для каждого поля
-  final nameController = TextEditingController();
-  final imageUrlController = TextEditingController();
-  final descriptionController = TextEditingController();
-  final priceController = TextEditingController();
+  final _notesStream = Supabase.instance.client.from('notes').stream(primaryKey: ['id']);
 
   void addNewNote() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Добавить новую запись'),
-        content: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: 'Название'),
-              ),
-              TextField(
-                controller: imageUrlController,
-                decoration: const InputDecoration(labelText: 'URL изображения'),
-              ),
-              TextField(
-                controller: descriptionController,
-                decoration: const InputDecoration(labelText: 'Описание'),
-              ),
-              TextField(
-                controller: priceController,
-                decoration: const InputDecoration(labelText: 'Цена'),
-                keyboardType: TextInputType.number,
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              saveNote();
-              Navigator.pop(context);
-            },
-            child: const Text('Сохранить'),
-          ),
-        ],
-      ),
+      builder: (context) => const AddProductDialog(),
     );
   }
-
-  void saveNote() async {
-    final double? price = double.tryParse(priceController.text);
-
-    await Supabase.instance.client
-        .from('notes')
-        .insert({
-          'Name': nameController.text,
-          'ImageURL': imageUrlController.text,
-          'Description': descriptionController.text,
-          'Price': price,
-        });
-
-    nameController.clear();
-    imageUrlController.clear();
-    descriptionController.clear();
-    priceController.clear();
-  }
-
-  final _notesStream = Supabase.instance.client.from('notes').stream(primaryKey: ['id']);
 
   @override
   Widget build(BuildContext context) {
