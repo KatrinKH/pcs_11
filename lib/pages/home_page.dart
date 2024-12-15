@@ -81,14 +81,14 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: addNewNote,
+        ),
         title: const Text('Видеоигры'),
         centerTitle: true,
       ),
       backgroundColor: const Color(0xFF67BEEA),
-      floatingActionButton: FloatingActionButton(
-        onPressed: addNewNote,
-        child: const Icon(Icons.add),
-      ),
       body: StreamBuilder<List<Map<String, dynamic>>>(
         stream: _notesStream,
         builder: (context, snapshot) {
