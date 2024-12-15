@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:pcs_11/components/product_card.dart';
 import 'package:pcs_11/widgets/add_product_dialog.dart';
+import 'package:pcs_11/pages/shopping_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,12 +13,19 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _notesStream = Supabase.instance.client.from('notes').stream(primaryKey: ['id']);
+  final List<Map<String, dynamic>> _cartItems = []; 
 
   void addNewNote() {
     showDialog(
       context: context,
       builder: (context) => const AddProductDialog(),
     );
+  }
+
+  void addToCart(Map<String, dynamic> product) {
+    setState(() {
+      _cartItems.add(product);
+    });
   }
 
   @override
@@ -30,6 +38,19 @@ class _HomePageState extends State<HomePage> {
         ),
         title: const Text('Видеоигры'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.shopping_cart),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CartPage(cartItems: _cartItems),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       backgroundColor: const Color(0xFF67BEEA),
       body: StreamBuilder<List<Map<String, dynamic>>>(
@@ -61,11 +82,14 @@ class _HomePageState extends State<HomePage> {
               final description = note['Description'] ?? 'Нет описания';
               final price = note['Price'] != null ? '\Р${note['Price']}' : 'Цена не указана';
 
-              return ProductCard(
-                name: name,
-                imageUrl: imageUrl,
-                description: description,
-                price: price,
+              return GestureDetector(
+                onTap: () => addToCart(note), 
+                child: ProductCard(
+                  name: name,
+                  imageUrl: imageUrl,
+                  description: description,
+                  price: price,
+                ),
               );
             },
           );

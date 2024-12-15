@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pcs_11/auth/auth_service.dart';
 import 'package:pcs_11/pages/login_page.dart';
-import 'package:supabase_flutter/supabase_flutter.dart'; // Импорт Supabase
+import 'package:supabase_flutter/supabase_flutter.dart'; 
 
-// Класс для хранения данных пользователя
 class UserData {
   static final UserData _instance = UserData._internal();
 
@@ -16,7 +15,7 @@ class UserData {
   String name = '';
   String phoneNumber = '';
   String city = '';
-  String email = ''; // Добавляем поле для email
+  String email = ''; 
 
   void updateUserData(String newName, String newPhoneNumber, String newCity) {
     name = newName;
@@ -35,14 +34,13 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final authService = AuthServices();
   final UserData _userData = UserData();
-  final SupabaseClient _supabase = Supabase.instance.client; // Инициализация Supabase
+  final SupabaseClient _supabase = Supabase.instance.client; 
 
-  // Метод для получения email из Supabase
   Future<void> _fetchUserEmail() async {
     final user = _supabase.auth.currentUser;
     if (user != null) {
       setState(() {
-        _userData.email = user.email ?? 'Неизвестно'; // Получаем email из Supabase
+        _userData.email = user.email ?? 'Неизвестно'; 
       });
     }
   }
@@ -50,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    _fetchUserEmail(); // Загружаем email при инициализации страницы
+    _fetchUserEmail(); 
   }
 
   void _showLogoutConfirmationDialog() {
